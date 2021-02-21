@@ -69,8 +69,12 @@ func main() {
 ```
  </details>
 
-### TODO
+### TODO  
 
+- [ ] Response objelerinin düzenlenmesi
+- [ ] Eksik hata kontrollerinin yapılması
+- [ ] Metot açıklamalarının eklenmesi
+- [ ] Bin numaralarının eklenmesi
 - [ ] Ödeme iptali
 - [ ] İade
 - [ ] İyzico entegrasyonu
