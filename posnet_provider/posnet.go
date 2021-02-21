@@ -57,13 +57,12 @@ func (p Posnet) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*mod
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	// now POST it
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer resp.Body.Close()
-	fmt.Println(resp)
+
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {

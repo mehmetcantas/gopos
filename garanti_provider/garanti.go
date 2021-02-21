@@ -36,7 +36,7 @@ func (g Garanti) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*mo
 	var installment = convertInstallmentCount(r.InstallmentCount)
 	var hashData = utils.GenerateSHA1(g.TerminalID + r.OrderNumber + orderTotal + r.SuccessURL + r.FailURL + g.TransactionType + installment + g.StoreKey + strings.ToUpper(secureData))
 
-	var paymentCollection = map[interface{}]interface{}{
+	var paymentParams = map[interface{}]interface{}{
 		"mode":                  mode,
 		"apiversion":            "v0.01",
 		"terminalprovuserid":    g.TerminalProvUserID,
@@ -51,20 +51,27 @@ func (g Garanti) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*mo
 		"successurl":            r.SuccessURL,   // 3D doğrulaması başarılı olması durumunda yönlendirilecek sayfa linki
 		"errorurl":              r.FailURL,      // 3D doğrulaması başarısız olması durumunda yönlendirilecek sayfa linki
 		"secure3dsecuritylevel": g.SecurityType, // 3D, 3D_PAY vb. güvenlik seçenekleri
-		"customeripaddress":     r.CustomerIPAddress,
+		"customeripaddress":     r.Customer.IPAddress,
 		"secure3dhash":          strings.ToUpper(hashData),
-		"customeremailaddress":  r.CustomerEmailAddress,
-		"companyname":           r.CompanyName,
-		"cardnumber":            r.CardNumber,
-		"cardexpiredatemonth":   r.ExpireMonth,
-		"cardexpiredateyear":    r.ExpireYear,
-		"cardcvv2":              r.CVV,
+		"customeremailaddress":  r.Customer.EmailAddress,
+
+		"cardnumber":          r.CardNumber,
+		"cardexpiredatemonth": r.ExpireMonth,
+		"cardexpiredateyear":  r.ExpireYear,
+		"cardcvv2":            r.CVV,
 	}
+
+	if r.Customer.IsCompany {
+		paymentParams["companyname"] = r.Customer.FullName
+	} else {
+		paymentParams["companyname"] = ""
+	}
+
 	//TODO: check errors
 	return &models.PaymentGatewayResponse{
 		IsSuccess:       true,
 		Message:         "",
-		HTMLFormContent: utils.PrepareForm(g.ApiURL, paymentCollection),
+		HTMLFormContent: utils.PrepareForm(g.ApiURL, paymentParams),
 	}, nil
 }
 

@@ -53,8 +53,8 @@ func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*mo
 		"lang":                            r.LanguageCode,              // Dil kodu örn : TR, EN vs.
 		"ccode":                           "",                          // ülke kodu
 		"cardHolderName":                  r.CardHolderName,            // kart üzerinde yazan isim
-		"userid":                          r.UserID,                    // veri tabanında kayıtlı kullanıcı id
-		"email":                           r.CustomerEmailAddress,      // müşteriye ait e-posta adresi
+		"userid":                          r.Customer.CustomerID,       // veri tabanında kayıtlı kullanıcı id
+		"email":                           r.Customer.EmailAddress,     // müşteriye ait e-posta adresi
 		"hash":                            hashData,                    // base64 tipinde hash değeri
 		"pan":                             r.CardNumber,                // kart numarası
 		"cv2":                             cardCVV,                     // kart güvenlik nuamrası
@@ -66,6 +66,19 @@ func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*mo
 		"amount":                          fmt.Sprintf("%.2f", r.OrderTotal),
 		"Fismi":                           r.CardHolderName,
 		"Tismi":                           r.CardHolderName,
+	}
+
+	if r.Customer.BillingAddress != "" {
+		if r.Customer.IsCompany {
+			paymentParams["Faturafirma"] = r.Customer.FullName
+		}
+		paymentParams["Fadres"] = r.Customer.BillingAddress // fatura adresi
+		paymentParams["Fpostakodu"] = r.Customer.BillingAddressZipCode
+	}
+
+	if r.Customer.ShippingAddress != "" {
+		paymentParams["tadres"] = r.Customer.ShippingAddress // teslimat adresi
+		paymentParams["tpostakodu"] = r.Customer.ShippingAddressZipCode
 	}
 
 	if r.InstallmentCount > 1 && n.UseManufacturerCardSupport == true {
