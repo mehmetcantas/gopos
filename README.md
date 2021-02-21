@@ -26,7 +26,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/mehmetcantas/gopos"
+	"github.com/mehmetcantas/gopos/netspay_provider"
 	"github.com/mehmetcantas/gopos/models"
 )
 
