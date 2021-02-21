@@ -69,6 +69,19 @@ func main() {
 ```
  </details>
 
+### TODO
+
+- [ ] Ödeme iptali
+- [ ] İade
+- [ ] İyzico entegrasyonu
+- [ ] Sofort entegrasyonu
+- [ ] UnionPay entegrasyonu
+- [ ] Paypal entegrasyonu
+
+
+
+
+
 MIT License
 
 Copyright (c) 2021 Mehmet Can Taş
