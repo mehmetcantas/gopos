@@ -24,7 +24,7 @@ type Garanti struct {
 	SecurityType       string // 3D, 3D_PAY, 3D_PAY_HOSTING vb.
 }
 
-func (g Garanti) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*models.PaymentGatewayResponse, error) {
+func (g Garanti) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (models.PaymentGatewayResponse, error) {
 
 	var mode string = "PROD"
 	if g.UseSandbox {
@@ -68,27 +68,27 @@ func (g Garanti) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*mo
 	}
 
 	//TODO: check errors
-	return &models.PaymentGatewayResponse{
+	return models.PaymentGatewayResponse{
 		IsSuccess:       true,
 		Message:         "",
 		HTMLFormContent: utils.PrepareForm(g.ApiURL, paymentParams),
 	}, nil
 }
 
-func (g Garanti) VerifyPayment(r *models.VerifyPaymentRequest) (*models.VerifyPaymentResponse, error) {
+func (g Garanti) VerifyPayment(r *models.VerifyPaymentRequest) (models.VerifyPaymentResponse, error) {
 	form := r.BankParams
 	var err error
 
 	if form == nil {
 		err = errors.New("Bankadan dönen form bilgileri boş olamaz")
-		return nil, err
+		return models.VerifyPaymentResponse{}, err
 	}
 
 	mdstatus := form.Get("mdstatus")
 
 	if mdstatus != "1" {
 		err = errors.New(form.Get("errmsg"))
-		return &models.VerifyPaymentResponse{
+		return models.VerifyPaymentResponse{
 			IsSuccess:      false,
 			BankMessage:    form.Get("hostmsg"),
 			BankStatusCode: form.Get("mdstatus"),
@@ -99,7 +99,7 @@ func (g Garanti) VerifyPayment(r *models.VerifyPaymentRequest) (*models.VerifyPa
 	}
 
 	paidAmount, _ := strconv.Atoi(form.Get("txnamount"))
-	return &models.VerifyPaymentResponse{
+	return models.VerifyPaymentResponse{
 		IsSuccess:      true,
 		BankMessage:    "",
 		BankStatusCode: form.Get("mdstatus"),

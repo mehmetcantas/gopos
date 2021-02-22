@@ -23,7 +23,7 @@ type Netspay struct {
 	SecurityType               string // 3D, 3D_PAY, 3D_PAY_HOSTING vb.
 }
 
-func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*models.PaymentGatewayResponse, error) {
+func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (models.PaymentGatewayResponse, error) {
 	var err error
 	var cardCVV string
 
@@ -34,7 +34,7 @@ func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*mo
 	}
 	if r.InstallmentCount < 0 {
 		err = errors.New("Taksit adeti sıfırdan küçük olamaz")
-		return nil, err
+		return models.PaymentGatewayResponse{}, err
 	}
 
 	installment := convertInstallment(r.InstallmentCount)
@@ -87,14 +87,14 @@ func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*mo
 
 	}
 
-	return &models.PaymentGatewayResponse{
+	return models.PaymentGatewayResponse{
 		IsSuccess:       true,
 		Message:         "",
 		HTMLFormContent: utils.PrepareForm(n.ApiURL, paymentParams),
 	}, nil
 }
 
-func (n Netspay) VerifyPayment(r *models.VerifyPaymentRequest) (*models.VerifyPaymentResponse, error) {
+func (n Netspay) VerifyPayment(r *models.VerifyPaymentRequest) (models.VerifyPaymentResponse, error) {
 
 	var err error
 	successStatusCodes := []string{"1", "2", "3", "4"}
@@ -105,11 +105,11 @@ func (n Netspay) VerifyPayment(r *models.VerifyPaymentRequest) (*models.VerifyPa
 
 	if mdStatus == "" {
 		err = errors.New("mdstatus değeri alınamadı")
-		return nil, err
+		return models.VerifyPaymentResponse{}, err
 	}
 
 	if procReturnCode != "00" || sort.SearchStrings(successStatusCodes, mdStatus) > 0 {
-		return &models.VerifyPaymentResponse{
+		return models.VerifyPaymentResponse{
 			IsSuccess:      false,
 			BankMessage:    form.Get("ErrMsg"),
 			BankStatusCode: procReturnCode,
@@ -123,12 +123,12 @@ func (n Netspay) VerifyPayment(r *models.VerifyPaymentRequest) (*models.VerifyPa
 	ok := verifyHash(form.Get("HASH"), r.BankParams, n.StoreKey)
 	if ok == false {
 		err = errors.New("Güvenlik imzası doğrulanamadı. Bankanızla iletişime geçiniz. Param name : HASH")
-		return nil, err
+		return models.VerifyPaymentResponse{}, err
 	}
 
 	paidAmount, _ := strconv.ParseFloat(form.Get("amount"), 64)
 
-	return &models.VerifyPaymentResponse{
+	return models.VerifyPaymentResponse{
 		IsSuccess:      true,
 		BankMessage:    "",
 		BankStatusCode: procReturnCode,
