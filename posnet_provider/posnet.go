@@ -22,7 +22,7 @@ type Posnet struct {
 	SecurityType string // 3D, 3D_PAY, 3D_PAY_HOSTING vb.
 }
 
-func (p Posnet) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*models.PaymentGatewayResponse, error) {
+func (p Posnet) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (models.PaymentGatewayResponse, error) {
 
 	var err error
 
@@ -47,6 +47,8 @@ func (p Posnet) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*mod
 				</posnetRequest>`
 
 	client := &http.Client{}
+	client.Timeout = 20
+
 	data := url.Values{}
 	data.Set("xmldata", xmlReq)
 	// build a new request, but not doing the POST yet
@@ -70,7 +72,7 @@ func (p Posnet) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (*mod
 	}
 
 	//TODO: check errors
-	return &models.PaymentGatewayResponse{
+	return models.PaymentGatewayResponse{
 		IsSuccess:       true,
 		Message:         resp.Status,
 		HTMLFormContent: string(body),
