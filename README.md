@@ -38,7 +38,7 @@ func main() {
 		ExpireYear:           "26",
 		CVV:                  "000",
 		CustomerEmailAddress: "tass.mehmetcan@outlook.com",
-		CompanyName:          "DOGO TASARIM SAN. ve TİC. A.Ş.",
+		CompanyName:          "",
 		OrderNumber:          "12343242",
 		OrderTotal:           142.54,
 		InstallmentCount:     1,
