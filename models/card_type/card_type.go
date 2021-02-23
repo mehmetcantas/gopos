@@ -6,5 +6,5 @@ const (
 	Visa CardType = iota
 	MasterCard
 	Amex
-	AmericanExpress
+	AmericanExpress = iota - 1
 )
