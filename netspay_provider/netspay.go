@@ -12,14 +12,12 @@ import (
 )
 
 type Netspay struct {
-	BankName                   string
-	StoreKey                   string
-	MerchantID                 string
-	UseSandbox                 bool
-	UseManufacturerCardSupport bool
-	IMCCode                    string
-	ApiURL                     string
-	SecurityType               string // 3D, 3D_PAY, 3D_PAY_HOSTING vb.
+	BankName     string
+	StoreKey     string
+	MerchantID   string
+	UseSandbox   bool
+	ApiURL       string
+	SecurityType string // 3D, 3D_PAY, 3D_PAY_HOSTING vb.
 }
 
 func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentRequest) (models.PaymentGatewayResponse, error) {
@@ -78,12 +76,6 @@ func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentRequest) (models.Pay
 	if r.Customer.ShippingAddress != "" {
 		paymentParams["tadres"] = r.Customer.ShippingAddress // teslimat adresi
 		paymentParams["tpostakodu"] = r.Customer.ShippingAddressZipCode
-	}
-
-	if r.InstallmentCount > 1 && n.UseManufacturerCardSupport == true {
-		paymentParams["IMCKOD"] = n.IMCCode
-		paymentParams["FDONEM"] = installment // erteleme dönem sayısı
-
 	}
 
 	return models.PaymentGatewayResponse{
