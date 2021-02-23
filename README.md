@@ -28,28 +28,37 @@ import (
 
 	"github.com/mehmetcantas/gopos/netspay_provider"
 	"github.com/mehmetcantas/gopos/models"
+	"github.com/mehmetcantas/gopos/models/card_type"
+	"github.com/mehmetcantas/gopos/models/currency"
 )
 
 func main() {
-	req := models.PaymentGatewayRequest{
-		CardHolderName:       "Mehmet Can Taş",
-		CardNumber:           "4355084355084358", // test kredi kartı
-		ExpireMonth:          "12",
-		ExpireYear:           "26",
-		CVV:                  "000",
-		CustomerEmailAddress: "tass.mehmetcan@outlook.com",
-		CompanyName:          "",
-		OrderNumber:          "12343242",
-		OrderTotal:           142.54,
-		InstallmentCount:     1,
-		UserID:               "12312414",
-		CurrencyCode:         "TL",
-		LanguageCode:         "tr",
-		CustomerIPAddress:    "127.0.0.1",
-		CardType:             "VISA",
-		SuccessURL:           "http://localhost:8090/netspay/verify",
-		FailURL:              "http://localhost:8090/netspay/verify",
-	}
+
+	customerBuilder := models.NewCustomerBuilder()
+
+	customerBuilder.NameIs("Mehmet Can Taş").
+		EmailIs("tass.mehmetcan@outlook.com").
+		IpAddress("127.0.0.1").
+		IsCompany(false).
+		ShipTo("test shipping address", "12354").
+		BillTo("test billing address", "123123").
+		WithID("1234432")
+	customer := customerBuilder.Build()
+
+	paymentBuilder := models.NewPaymentRequestBuilder()
+	paymentBuilder.
+		Card("Mehmet Can Taş", "4355084355084358", "000").
+		Type(card_type.Visa).
+		IsExpire("12", "26").
+		Currency(currency.TRY).
+		Language("TR").
+		WithInstallment(1).
+		To(customer).
+		ForOrder("23425423", 125.54).
+		InSuccessReturns("http://localhost:8090/verify").
+		InErrorReturns("http://localhost:8090/verify")
+
+	req := paymentBuilder.Build()
 
 	var netspay = netspay_provider.Netspay{
 		UseSandbox:                 true,
@@ -60,6 +69,7 @@ func main() {
 		SecurityType:               "3D_PAY",
 		UseManufacturerCardSupport: false,
 	}
+
 	res, _ := netspay.PreparePaymentGatewayForm(&req)
 	
 	fmt.Println(res)
