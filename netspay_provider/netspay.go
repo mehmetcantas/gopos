@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -23,7 +22,7 @@ type Netspay struct {
 	SecurityType               string // 3D, 3D_PAY, 3D_PAY_HOSTING vb.
 }
 
-func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (models.PaymentGatewayResponse, error) {
+func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentRequest) (models.PaymentGatewayResponse, error) {
 	var err error
 	var cardCVV string
 
@@ -45,24 +44,24 @@ func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (mod
 	paymentParams := map[interface{}]interface{}{
 		"clientid":                        n.MerchantID, // mağaza no
 		"storetype":                       n.SecurityType,
-		"oid":                             r.OrderNumber,               // sipariş numarası
-		"okUrl":                           r.SuccessURL,                // 3D doğrulama başarılı olduktan sonra adres
-		"failUrl":                         r.FailURL,                   // 3D doğrulama başarısız olduktan sonra yönlendirilecek adres
-		"rnd":                             r.OrderNumber + rndNum,      // sipariş numarası ve yukarda oluşturulan random numaranın birleşimi
-		"islemtipi":                       "Auth",                      // Satış
-		"lang":                            r.LanguageCode,              // Dil kodu örn : TR, EN vs.
-		"ccode":                           "",                          // ülke kodu
-		"cardHolderName":                  r.CardHolderName,            // kart üzerinde yazan isim
-		"userid":                          r.Customer.CustomerID,       // veri tabanında kayıtlı kullanıcı id
-		"email":                           r.Customer.EmailAddress,     // müşteriye ait e-posta adresi
-		"hash":                            hashData,                    // base64 tipinde hash değeri
-		"pan":                             r.CardNumber,                // kart numarası
-		"cv2":                             cardCVV,                     // kart güvenlik nuamrası
-		"Ecom_Payment_Card_ExpDate_Year":  r.ExpireYear,                //  son kullanma tarihi (yıl)
-		"Ecom_Payment_Card_ExpDate_Month": r.ExpireMonth,               // son kullanma tarihi (ay)
-		"taksit":                          installment,                 // taskit adeti
-		"cardType":                        convertCardType(r.CardType), // Kart tipi direkt olarak VISA veya MASTERCARD olarak gönderilmediğinden dolayı dönüştürme işlemi yapılmalı
-		"currency":                        utils.ConvertCurrencyCode(r.CurrencyCode),
+		"oid":                             r.OrderNumber,           // sipariş numarası
+		"okUrl":                           r.SuccessURL,            // 3D doğrulama başarılı olduktan sonra adres
+		"failUrl":                         r.FailURL,               // 3D doğrulama başarısız olduktan sonra yönlendirilecek adres
+		"rnd":                             r.OrderNumber + rndNum,  // sipariş numarası ve yukarda oluşturulan random numaranın birleşimi
+		"islemtipi":                       "Auth",                  // Satış
+		"lang":                            r.LanguageCode,          // Dil kodu örn : TR, EN vs.
+		"ccode":                           "",                      // ülke kodu
+		"cardHolderName":                  r.CardHolderName,        // kart üzerinde yazan isim
+		"userid":                          r.Customer.CustomerID,   // veri tabanında kayıtlı kullanıcı id
+		"email":                           r.Customer.EmailAddress, // müşteriye ait e-posta adresi
+		"hash":                            hashData,                // base64 tipinde hash değeri
+		"pan":                             r.CardNumber,            // kart numarası
+		"cv2":                             cardCVV,                 // kart güvenlik nuamrası
+		"Ecom_Payment_Card_ExpDate_Year":  r.ExpireYear,            //  son kullanma tarihi (yıl)
+		"Ecom_Payment_Card_ExpDate_Month": r.ExpireMonth,           // son kullanma tarihi (ay)
+		"taksit":                          installment,             // taskit adeti
+		"cardType":                        r.CardType,              // Kart tipi direkt olarak VISA veya MASTERCARD olarak gönderilmediğinden dolayı dönüştürme işlemi yapılmalı
+		"currency":                        r.CurrencyCode,
 		"amount":                          fmt.Sprintf("%.2f", r.OrderTotal),
 		"Fismi":                           r.CardHolderName,
 		"Tismi":                           r.CardHolderName,
@@ -156,20 +155,4 @@ func verifyHash(source string, values url.Values, storekey string) bool {
 	}
 
 	return true
-}
-
-func convertCardType(cardType string) string {
-	cardType = strings.Replace(cardType, " ", "", 0)
-	switch strings.ToUpper(cardType) {
-	case "VISA":
-		return "1"
-	case "MASTERCARD":
-		return "2"
-	case "AMEX":
-		return "3"
-	case "AMERICANEXPRESS":
-		return "3"
-	default:
-		return "1"
-	}
 }
