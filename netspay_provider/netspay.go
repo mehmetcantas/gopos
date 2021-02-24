@@ -20,7 +20,7 @@ type Netspay struct {
 	SecurityType string // 3D, 3D_PAY, 3D_PAY_HOSTING vb.
 }
 
-func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentRequest) (models.PaymentGatewayResponse, error) {
+func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (models.PaymentGatewayResponse, error) {
 	var err error
 	var cardCVV string
 
@@ -59,7 +59,7 @@ func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentRequest) (models.Pay
 		"Ecom_Payment_Card_ExpDate_Month": r.ExpireMonth,           // son kullanma tarihi (ay)
 		"taksit":                          installment,             // taskit adeti
 		"cardType":                        r.CardType,              // Kart tipi direkt olarak VISA veya MASTERCARD olarak gönderilmediğinden dolayı dönüştürme işlemi yapılmalı
-		"currency":                        r.CurrencyCode,
+		"currency":                        fmt.Sprintf("%v", r.CurrencyCode),
 		"amount":                          fmt.Sprintf("%.2f", r.OrderTotal),
 		"Fismi":                           r.CardHolderName,
 		"Tismi":                           r.CardHolderName,

@@ -2,7 +2,6 @@ package posnet_provider
 
 import (
 	"fmt"
-	"github.com/mehmetcantas/gopos/internal/utils"
 	"github.com/mehmetcantas/gopos/models"
 	"io/ioutil"
 	"log"
@@ -36,7 +35,7 @@ func (p Posnet) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (mode
 						<posnetid>` + p.PosnetID + `</posnetid>
 						<XID>` + r.OrderNumber + `</XID>
 						<amount>` + orderTotal + `</amount>
-						<currencyCode>` + utils.ConvertCurrencyCode(r.CurrencyCode) + `</currencyCode>
+						<currencyCode>` + fmt.Sprintf("%v", r.CurrencyCode) + `</currencyCode>
 						<installment>00</installment>
 						<tranType>Sale</tranType>
 						<cardHolderName>` + r.CardHolderName + `</cardHolderName>

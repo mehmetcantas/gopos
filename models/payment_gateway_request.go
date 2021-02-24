@@ -5,7 +5,7 @@ import (
 	"github.com/mehmetcantas/gopos/models/currency"
 )
 
-type PaymentRequest struct {
+type PaymentGatewayRequest struct {
 	CardHolderName, CardNumber, CVV, ExpireMonth, ExpireYear string
 	OrderNumber                                              string
 	OrderTotal                                               float64
@@ -17,63 +17,63 @@ type PaymentRequest struct {
 	Customer                                                 *Customer
 }
 
-type PaymentRequestBuilder struct {
-	PaymentRequest *PaymentRequest
+type PaymentGatewayRequestBuilder struct {
+	paymentGatewayRequest *PaymentGatewayRequest
 }
 
-func NewPaymentRequestBuilder() *PaymentRequestBuilder {
-	return &PaymentRequestBuilder{&PaymentRequest{}}
+func NewPaymentGatewayRequestBuilder() *PaymentGatewayRequestBuilder {
+	return &PaymentGatewayRequestBuilder{&PaymentGatewayRequest{}}
 }
 
-func (p *PaymentRequestBuilder) Card(holderName string, cardNumber string, CVV string) *PaymentRequestBuilder {
-	p.PaymentRequest.CardHolderName = holderName
-	p.PaymentRequest.CardNumber = cardNumber
-	p.PaymentRequest.CVV = CVV
-	return p
-}
-
-func (p *PaymentRequestBuilder) ExpireAt(expireMonth string, expireYear string) *PaymentRequestBuilder {
-	p.PaymentRequest.ExpireMonth = expireMonth
-	p.PaymentRequest.ExpireYear = expireYear
-	return p
-}
-func (p *PaymentRequestBuilder) Type(cardType card_type.CardType) *PaymentRequestBuilder {
-	p.PaymentRequest.CardType = cardType
+func (p *PaymentGatewayRequestBuilder) Card(holderName string, cardNumber string, CVV string) *PaymentGatewayRequestBuilder {
+	p.paymentGatewayRequest.CardHolderName = holderName
+	p.paymentGatewayRequest.CardNumber = cardNumber
+	p.paymentGatewayRequest.CVV = CVV
 	return p
 }
 
-func (p *PaymentRequestBuilder) Currency(code currency.CurrencyCode) *PaymentRequestBuilder {
-	p.PaymentRequest.CurrencyCode = code
+func (p *PaymentGatewayRequestBuilder) ExpireAt(expireMonth string, expireYear string) *PaymentGatewayRequestBuilder {
+	p.paymentGatewayRequest.ExpireMonth = expireMonth
+	p.paymentGatewayRequest.ExpireYear = expireYear
 	return p
 }
-func (p *PaymentRequestBuilder) Language(lCode string) *PaymentRequestBuilder {
-	p.PaymentRequest.LanguageCode = lCode
-	return p
-}
-func (p *PaymentRequestBuilder) ForOrder(oNumber string, oTotal float64) *PaymentRequestBuilder {
-
-	p.PaymentRequest.OrderNumber = oNumber
-	p.PaymentRequest.OrderTotal = oTotal
-	return p
-}
-func (p *PaymentRequestBuilder) WithInstallment(installment int) *PaymentRequestBuilder {
-	p.PaymentRequest.InstallmentCount = installment
-	return p
-}
-func (p *PaymentRequestBuilder) ToCustomer(customer *Customer) *PaymentRequestBuilder {
-	p.PaymentRequest.Customer = customer
-	return p
-}
-func (p *PaymentRequestBuilder) InSuccessReturns(successUrl string) *PaymentRequestBuilder {
-	p.PaymentRequest.SuccessURL = successUrl
+func (p *PaymentGatewayRequestBuilder) Type(cardType card_type.CardType) *PaymentGatewayRequestBuilder {
+	p.paymentGatewayRequest.CardType = cardType
 	return p
 }
 
-func (p *PaymentRequestBuilder) InFailReturns(failUrl string) *PaymentRequestBuilder {
-	p.PaymentRequest.FailURL = failUrl
+func (p *PaymentGatewayRequestBuilder) Currency(code currency.CurrencyCode) *PaymentGatewayRequestBuilder {
+	p.paymentGatewayRequest.CurrencyCode = code
+	return p
+}
+func (p *PaymentGatewayRequestBuilder) Language(lCode string) *PaymentGatewayRequestBuilder {
+	p.paymentGatewayRequest.LanguageCode = lCode
+	return p
+}
+func (p *PaymentGatewayRequestBuilder) ForOrder(oNumber string, oTotal float64) *PaymentGatewayRequestBuilder {
+
+	p.paymentGatewayRequest.OrderNumber = oNumber
+	p.paymentGatewayRequest.OrderTotal = oTotal
+	return p
+}
+func (p *PaymentGatewayRequestBuilder) WithInstallment(installment int) *PaymentGatewayRequestBuilder {
+	p.paymentGatewayRequest.InstallmentCount = installment
+	return p
+}
+func (p *PaymentGatewayRequestBuilder) ToCustomer(customer *Customer) *PaymentGatewayRequestBuilder {
+	p.paymentGatewayRequest.Customer = customer
+	return p
+}
+func (p *PaymentGatewayRequestBuilder) InSuccessReturns(successUrl string) *PaymentGatewayRequestBuilder {
+	p.paymentGatewayRequest.SuccessURL = successUrl
 	return p
 }
 
-func (p *PaymentRequestBuilder) Build() *PaymentRequest {
-	return p.PaymentRequest
+func (p *PaymentGatewayRequestBuilder) InFailReturns(failUrl string) *PaymentGatewayRequestBuilder {
+	p.paymentGatewayRequest.FailURL = failUrl
+	return p
+}
+
+func (p *PaymentGatewayRequestBuilder) Build() *PaymentGatewayRequest {
+	return p.paymentGatewayRequest
 }
