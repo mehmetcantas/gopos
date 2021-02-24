@@ -49,14 +49,14 @@ func main() {
 	paymentBuilder.
 		Card("Mehmet Can Taş", "4355084355084358", "000").
 		Type(card_type.Visa).
-		IsExpire("12", "26").
+		ExpireAt("12", "26").
 		Currency(currency.TRY).
 		Language("TR").
 		WithInstallment(1).
-		To(customer).
+		ToCustomer(customer).
 		ForOrder("23425423", 125.54).
 		InSuccessReturns("http://localhost:8090/verify").
-		InErrorReturns("http://localhost:8090/verify")
+		InFailReturns("http://localhost:8090/verify")
 
 	req := paymentBuilder.Build()
 

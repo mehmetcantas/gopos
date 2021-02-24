@@ -32,7 +32,7 @@ func (p *PaymentRequestBuilder) Card(holderName string, cardNumber string, CVV s
 	return p
 }
 
-func (p *PaymentRequestBuilder) IsExpire(expireMonth string, expireYear string) *PaymentRequestBuilder {
+func (p *PaymentRequestBuilder) ExpireAt(expireMonth string, expireYear string) *PaymentRequestBuilder {
 	p.PaymentRequest.ExpireMonth = expireMonth
 	p.PaymentRequest.ExpireYear = expireYear
 	return p
@@ -60,7 +60,7 @@ func (p *PaymentRequestBuilder) WithInstallment(installment int) *PaymentRequest
 	p.PaymentRequest.InstallmentCount = installment
 	return p
 }
-func (p *PaymentRequestBuilder) To(customer *Customer) *PaymentRequestBuilder {
+func (p *PaymentRequestBuilder) ToCustomer(customer *Customer) *PaymentRequestBuilder {
 	p.PaymentRequest.Customer = customer
 	return p
 }
@@ -69,7 +69,7 @@ func (p *PaymentRequestBuilder) InSuccessReturns(successUrl string) *PaymentRequ
 	return p
 }
 
-func (p *PaymentRequestBuilder) InErrorReturns(failUrl string) *PaymentRequestBuilder {
+func (p *PaymentRequestBuilder) InFailReturns(failUrl string) *PaymentRequestBuilder {
 	p.PaymentRequest.FailURL = failUrl
 	return p
 }
