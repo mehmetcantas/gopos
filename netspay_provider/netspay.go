@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mehmetcantas/gopos/internal/utils"
 	"github.com/mehmetcantas/gopos/models"
+	securitytype "github.com/mehmetcantas/gopos/models/security_type"
 	"net/url"
 	"sort"
 	"strconv"
@@ -17,7 +18,7 @@ type Netspay struct {
 	MerchantID   string
 	UseSandbox   bool
 	ApiURL       string
-	SecurityType string // 3D, 3D_PAY, 3D_PAY_HOSTING vb.
+	SecurityType securitytype.SecurityType // 3D, 3D_PAY, 3D_PAY_HOSTING vb.
 }
 
 func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (models.PaymentGatewayResponse, error) {
@@ -41,33 +42,33 @@ func (n Netspay) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (mod
 
 	paymentParams := map[interface{}]interface{}{
 		"clientid":                        n.MerchantID, // mağaza no
-		"storetype":                       n.SecurityType,
-		"oid":                             r.OrderNumber,           // sipariş numarası
-		"okUrl":                           r.SuccessURL,            // 3D doğrulama başarılı olduktan sonra adres
-		"failUrl":                         r.FailURL,               // 3D doğrulama başarısız olduktan sonra yönlendirilecek adres
-		"rnd":                             r.OrderNumber + rndNum,  // sipariş numarası ve yukarda oluşturulan random numaranın birleşimi
-		"islemtipi":                       "Auth",                  // Satış
-		"lang":                            r.LanguageCode,          // Dil kodu örn : TR, EN vs.
-		"ccode":                           "",                      // ülke kodu
-		"cardHolderName":                  r.CardHolderName,        // kart üzerinde yazan isim
-		"userid":                          r.Customer.CustomerID,   // veri tabanında kayıtlı kullanıcı id
-		"email":                           r.Customer.EmailAddress, // müşteriye ait e-posta adresi
-		"hash":                            hashData,                // base64 tipinde hash değeri
-		"pan":                             r.CardNumber,            // kart numarası
-		"cv2":                             cardCVV,                 // kart güvenlik nuamrası
-		"Ecom_Payment_Card_ExpDate_Year":  r.ExpireYear,            //  son kullanma tarihi (yıl)
-		"Ecom_Payment_Card_ExpDate_Month": r.ExpireMonth,           // son kullanma tarihi (ay)
-		"taksit":                          installment,             // taskit adeti
-		"cardType":                        r.CardType,              // Kart tipi direkt olarak VISA veya MASTERCARD olarak gönderilmediğinden dolayı dönüştürme işlemi yapılmalı
+		"storetype":                       fmt.Sprintf("%v", n.SecurityType),
+		"oid":                             r.OrderNumber,                 // sipariş numarası
+		"okUrl":                           r.SuccessURL,                  // 3D doğrulama başarılı olduktan sonra adres
+		"failUrl":                         r.FailURL,                     // 3D doğrulama başarısız olduktan sonra yönlendirilecek adres
+		"rnd":                             r.OrderNumber + rndNum,        // sipariş numarası ve yukarda oluşturulan random numaranın birleşimi
+		"islemtipi":                       "Auth",                        // Satış
+		"lang":                            r.LanguageCode,                // Dil kodu örn : TR, EN vs.
+		"ccode":                           "",                            // ülke kodu
+		"cardHolderName":                  r.CardHolderName,              // kart üzerinde yazan isim
+		"userid":                          r.Customer.CustomerID,         // veri tabanında kayıtlı kullanıcı id
+		"email":                           r.Customer.EmailAddress,       // müşteriye ait e-posta adresi
+		"hash":                            hashData,                      // base64 tipinde hash değeri
+		"pan":                             r.CardNumber,                  // kart numarası
+		"cv2":                             cardCVV,                       // kart güvenlik nuamrası
+		"Ecom_Payment_Card_ExpDate_Year":  r.ExpireYear,                  //  son kullanma tarihi (yıl)
+		"Ecom_Payment_Card_ExpDate_Month": r.ExpireMonth,                 // son kullanma tarihi (ay)
+		"taksit":                          installment,                   // taskit adeti
+		"cardType":                        fmt.Sprintf("%v", r.CardType), // Kart tipi direkt olarak VISA veya MASTERCARD olarak gönderilmediğinden dolayı dönüştürme işlemi yapılmalı
 		"currency":                        fmt.Sprintf("%v", r.CurrencyCode),
 		"amount":                          fmt.Sprintf("%.2f", r.OrderTotal),
-		"Fismi":                           r.CardHolderName,
-		"Tismi":                           r.CardHolderName,
+		"Fismi":                           r.Customer.BillingCustomerName,
+		"Tismi":                           r.Customer.ShippingCustomerName,
 	}
 
 	if r.Customer.BillingAddress != "" {
-		if r.Customer.IsCompany {
-			paymentParams["Faturafirma"] = r.Customer.FullName
+		if r.Customer.IsBillingToCompany {
+			paymentParams["Faturafirma"] = r.Customer.BillingCustomerName
 		}
 		paymentParams["Fadres"] = r.Customer.BillingAddress // fatura adresi
 		paymentParams["Fpostakodu"] = r.Customer.BillingAddressZipCode
