@@ -36,12 +36,12 @@ func main() {
 
 	customerBuilder := models.NewCustomerBuilder()
 
-	customerBuilder.NameIs("Mehmet Can Taş").
+	customerBuilder.
 		EmailIs("tass.mehmetcan@outlook.com").
 		IpAddress("127.0.0.1").
-		IsCompany(false).
-		ShipTo("test shipping address", "12354").
-		BillTo("test billing address", "123123").
+		IsBillingToCompany(false).
+		ShipTo("Mehmet Can Taş","test shipping address", "12354").
+		BillTo("Mehmet Can Taş","test billing address", "123123").
 		WithID("1234432")
 	customer := customerBuilder.Build()
 
