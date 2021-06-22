@@ -42,10 +42,10 @@ func (g Garanti) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (mod
 		"terminalprovuserid":    g.TerminalProvUserID,
 		"terminaluserid":        g.TerminalUserID,
 		"terminalmerchantid":    g.MerchantID,
-		"txntype":               g.TransactionType,                         // direkt satış için "sales"
-		"txnamount":             orderTotal,                                // sipariş tutarı. Burada . ya da , gibi işaretler kaldırılmalı. Örn: 154,45 => 15445. Son iki karakter kuruş olarak algılanır.
-		"txncurrencycode":       utils.ConvertCurrencyCode(r.CurrencyCode), // TL => 949, USD => 940, EURO => 978, GBP => 826, JPY => 392
-		"txninstallmentcount":   installment,                               // peşin satış için boş gönderilmesi gerekiyor.
+		"txntype":               g.TransactionType,                                       // direkt satış için "sales"
+		"txnamount":             orderTotal,                                              // sipariş tutarı. Burada . ya da , gibi işaretler kaldırılmalı. Örn: 154,45 => 15445. Son iki karakter kuruş olarak algılanır.
+		"txncurrencycode":       utils.ConvertCurrencyCode(string(rune(r.CurrencyCode))), // TL => 949, USD => 940, EURO => 978, GBP => 826, JPY => 392
+		"txninstallmentcount":   installment,                                             // peşin satış için boş gönderilmesi gerekiyor.
 		"orderid":               r.OrderNumber,
 		"terminalid":            g.TerminalID,   // mağaza üye numarası
 		"successurl":            r.SuccessURL,   // 3D doğrulaması başarılı olması durumunda yönlendirilecek sayfa linki
@@ -61,8 +61,8 @@ func (g Garanti) PreparePaymentGatewayForm(r *models.PaymentGatewayRequest) (mod
 		"cardcvv2":            r.CVV,
 	}
 
-	if r.Customer.IsCompany {
-		paymentParams["companyname"] = r.Customer.FullName
+	if r.Customer.IsBillingToCompany {
+		paymentParams["companyname"] = r.Customer.BillingCustomerName
 	} else {
 		paymentParams["companyname"] = ""
 	}
